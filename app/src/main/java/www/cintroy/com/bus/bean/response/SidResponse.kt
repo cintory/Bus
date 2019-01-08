@@ -5,7 +5,7 @@ package www.cintroy.com.bus.bean.response
  * Email：Cintory@gmail.com
  */
 class SidResponse {
-  private var mes = ""
+  var mes = ""
 
-  private var sid = ""
+  var sid = ""
 }

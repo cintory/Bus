@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <dimen name="title_bar_horizon_margin">15dp</dimen>
+  <dimen name="title_bar_vertical_margin">15dp</dimen>
+  <dimen name="bottom_sheet_corner_radius">10dp</dimen>
+  <dimen name="bottom_sheet_top_padding">15dp</dimen>
+
+</resources>

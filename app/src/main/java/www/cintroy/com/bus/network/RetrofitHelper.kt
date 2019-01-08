@@ -22,15 +22,18 @@ object RetrofitHelper {
     .build().create(BusApi::class.java)
 
 
-  fun getStation(sid: String): Single<List<Station>> {
-    return Single.create<List<Station>> { emitter ->
+  fun getSid(idnum: String) = busApi.getSid(idnum)
+
+
+  fun getStation(sid: String): Single<MutableList<Station>> {
+    return Single.create<MutableList<Station>> { emitter ->
       try {
         val doc = Jsoup.connect(BusApi.HOST + "/public/bus/mes/sid/" + sid).get()
-        val stationElements = doc.select("station")
+        val stationElements = doc.select("div.station")
         var stationList = mutableListOf<Station>()
         for (stationElement in stationElements) {
-          val num = stationElement.getElementsByClass("num").toString()
-          val stationName = stationElement.getElementsByClass("num").toString()
+          val num = stationElement.getElementsByClass("num").text().replace(".", "")
+          val stationName = stationElement.getElementsByClass("name").text()
           stationList.add(Station(num, stationName))
         }
         emitter.onSuccess(stationList)
