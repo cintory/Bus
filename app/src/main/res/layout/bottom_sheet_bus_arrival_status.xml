@@ -18,11 +18,21 @@
       app:layout_constraintTop_toTopOf="parent"/>
 
   <ImageView
+      android:id="@+id/ivSwap"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginTop="10dp"
+      android:layout_marginEnd="45dp"
+      android:src="@drawable/ic_swap"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"/>
+
+  <ImageView
       android:id="@+id/ivCollection"
       android:layout_width="20dp"
       android:layout_height="20dp"
-      android:src="@drawable/ic_collection"
       android:layout_marginStart="10dp"
+      android:src="@drawable/ic_collection"
       android:visibility="gone"
       app:layout_constraintBottom_toBottomOf="@id/tvLineName"
       app:layout_constraintStart_toEndOf="@id/tvLineName"

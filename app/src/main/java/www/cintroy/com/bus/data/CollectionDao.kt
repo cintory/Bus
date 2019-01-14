@@ -5,7 +5,6 @@ import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
-import io.reactivex.Single
 
 /**
  * Created by Cintory on 2018/12/18 15:17
@@ -36,5 +35,6 @@ interface CollectionDao {
 data class Collection(
   val sid: String,
   val lineName: String,
-  val stopID: String
+  val stopID: String,
+  val direction: String
 )

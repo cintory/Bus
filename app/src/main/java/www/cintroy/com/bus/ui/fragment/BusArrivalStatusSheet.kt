@@ -1,14 +1,11 @@
 package www.cintroy.com.bus.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.reactivex.Completable
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -16,7 +13,6 @@ import kotlinx.android.synthetic.main.bottom_sheet_bus_arrival_status.*
 import www.cintroy.com.bus.R
 import www.cintroy.com.bus.app.BusApplication
 import www.cintroy.com.bus.bean.Station
-import www.cintroy.com.bus.bean.response.SidResponse
 import www.cintroy.com.bus.bean.response.StationResponse
 import www.cintroy.com.bus.data.BusDatabase
 import www.cintroy.com.bus.data.Collection
@@ -32,19 +28,68 @@ class BusArrivalStatusSheet : BottomSheetDialogFragment() {
   private val disposable = CompositeDisposable()
   private var idnum: String = ""
   private var sid: String = ""
-  private var stopType: String = "0"
+  private var stopType: String = "1"
   private var isCollected = false
   private var stationList = mutableListOf<Station>()
-  private var busArrivelStatus = mutableListOf<List<StationResponse>>()
+  private var busArrivalStatus = mutableListOf<List<StationResponse>>()
 
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    getGetStationStatus()
+  }
+
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
+    return inflater.inflate(R.layout.bottom_sheet_bus_arrival_status, container, false)
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    rvData.layoutManager = LinearLayoutManager(activity)
+    rvData.adapter = StationAdapter(stationList, busArrivalStatus)
+    tvLineName.text = idnum
+    tvLineName.setOnClickListener {
+      val collection = Collection(sid, idnum, "", stopType)
+      disposable.add(
+        BusDatabase.getDatabase(BusApplication.INSTANCE).collectionDao()
+          .putCollection(collection)
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe({
+            isCollected = true
+            ivCollection.visibility = View.VISIBLE
+          }, { e ->
+            e.printStackTrace()
+          })
+      )
+    }
+    ivSwap.setOnClickListener {
+      if (progress.visibility == View.VISIBLE) return@setOnClickListener
+      it.animate().rotationBy(360f).start()
+      stationList.clear()
+      busArrivalStatus.clear()
+      rvData.adapter?.notifyDataSetChanged()
+      stopType = if (stopType == "0") {
+        "1"
+      } else {
+        "0"
+      }
+      getGetStationStatus()
+    }
+  }
+
+  private fun getGetStationStatus() {
+    progress?.visibility = View.VISIBLE
+    ivCollection?.visibility = View.GONE
     disposable.add(
       RetrofitHelper.getSid(idnum)
         .flatMap { t ->
           sid = t.sid
-          RetrofitHelper.getStation(t.sid)
+          RetrofitHelper.getStation(t.sid, stopType)
         }
         .flattenAsObservable {
           stationList.clear()
@@ -56,8 +101,8 @@ class BusArrivalStatusSheet : BottomSheetDialogFragment() {
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSuccess { data ->
           progress.visibility = View.GONE
-          busArrivelStatus.clear()
-          busArrivelStatus.addAll(data)
+          busArrivalStatus.clear()
+          busArrivalStatus.addAll(data)
           rvData.adapter?.notifyDataSetChanged()
         }
         .flatMapMaybe {
@@ -72,40 +117,11 @@ class BusArrivalStatusSheet : BottomSheetDialogFragment() {
           isCollected = true
           ivCollection.visibility = View.VISIBLE
         }, { error ->
+          progress.visibility = View.GONE
+          ivCollection.visibility = View.VISIBLE
           error.printStackTrace()
         })
     )
-
-  }
-
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(R.layout.bottom_sheet_bus_arrival_status, container, false)
-  }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    rvData.layoutManager = LinearLayoutManager(activity)
-    rvData.adapter = StationAdapter(stationList, busArrivelStatus)
-    tvLineName.text = idnum
-    tvLineName.setOnClickListener {
-      val collection = Collection(sid, idnum, "")
-      disposable.add(
-        BusDatabase.getDatabase(BusApplication.INSTANCE).collectionDao()
-          .putCollection(collection)
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe({
-            isCollected = true
-            ivCollection.visibility = View.VISIBLE
-          }, { e ->
-            e.printStackTrace()
-          })
-      )
-    }
   }
 
   override fun onDestroy() {

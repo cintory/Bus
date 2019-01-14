@@ -7,6 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import www.cintroy.com.bus.bean.Station
+import www.cintroy.com.bus.bean.response.StationResponse
 import java.io.IOException
 
 
@@ -25,10 +26,11 @@ object RetrofitHelper {
   fun getSid(idnum: String) = busApi.getSid(idnum)
 
 
-  fun getStation(sid: String): Single<MutableList<Station>> {
+  fun getStation(sid: String, direction: String): Single<MutableList<Station>> {
     return Single.create<MutableList<Station>> { emitter ->
       try {
-        val doc = Jsoup.connect(BusApi.HOST + "/public/bus/mes/sid/" + sid).get()
+        val doc =
+          Jsoup.connect(BusApi.HOST + "/public/bus/mes/sid/" + sid + (if (direction == "1") { "?stoptype=1" }else{""})).get()
         val stationElements = doc.select("div.station")
         var stationList = mutableListOf<Station>()
         for (stationElement in stationElements) {
@@ -43,8 +45,6 @@ object RetrofitHelper {
     }
   }
 
-  fun getBusStop(stopType: String, stopId: String, sid: String) =
-    busApi.getBusStop(stopType, stopId, sid)
-
-
+  fun getBusStop(stopType: String?, stopId: String, sid: String) =
+    busApi.getBusStop(stopType, stopId, sid).onErrorReturn { mutableListOf() }
 }

@@ -16,7 +16,6 @@ import www.cintroy.com.bus.bean.response.StationResponse
  * Email：Cintory@gmail.com
  */
 class StationAdapter(
-
   var stationList: MutableList<Station>,
   var busArriveStatus: MutableList<List<StationResponse>>
 ) :
@@ -74,7 +73,6 @@ class StationAdapter(
     val ivBus: ImageView = itemView.findViewById(R.id.ivBus)
     val vUpLine: View = itemView.findViewById(R.id.vUpLine)
     val vDownLine: View = itemView.findViewById(R.id.vDownLine)
-
   }
 }
 
