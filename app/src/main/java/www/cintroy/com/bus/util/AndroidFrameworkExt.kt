@@ -1,13 +1,11 @@
 package www.cintroy.com.bus.util
 
-import android.annotation.TargetApi
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.os.Build.VERSION_CODES
 import android.util.TypedValue
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
@@ -15,7 +13,6 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.UiThread
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import io.reactivex.Observable
 import www.cintroy.com.bus.R
 import java.io.File
@@ -30,16 +27,16 @@ fun Context.clearCache() = cleanDir(applicationContext.cacheDir)
 private fun cleanDir(dir: File): Long {
   var bytesDeleted: Long = 0
   dir.listFiles()
-    .forEach {
-      val length = it.length()
-      try {
-        if (it.delete()) {
-          bytesDeleted += length
+      .forEach {
+        val length = it.length()
+        try {
+          if (it.delete()) {
+            bytesDeleted += length
+          }
+        } catch (e: IOException) {
+          // Ignore these for now
         }
-      } catch (e: IOException) {
-        // Ignore these for now
       }
-    }
   return bytesDeleted
 }
 
@@ -57,8 +54,8 @@ fun Context.maybeStartActivity(intent: Intent): Boolean = maybeStartActivity(int
 fun Context.maybeStartChooser(intent: Intent): Boolean = maybeStartActivity(intent, true)
 
 private fun Context.maybeStartActivity(
-  inputIntent: Intent,
-  chooser: Boolean
+    inputIntent: Intent,
+    chooser: Boolean
 ): Boolean {
   var intent = inputIntent
   return if (hasHandler(intent)) {
@@ -69,8 +66,8 @@ private fun Context.maybeStartActivity(
     true
   } else {
     Toast.makeText(
-      this, R.string.no_intent_handler,
-      LENGTH_LONG
+        this, R.string.no_intent_handler,
+        LENGTH_LONG
     ).show()
     false
   }
@@ -80,7 +77,7 @@ private fun Context.maybeStartActivity(
  * Queries on-device packages for a handler for the supplied [Intent].
  */
 private fun Context.hasHandler(intent: Intent) =
-  !packageManager.queryIntentActivities(intent, 0).isEmpty()
+    !packageManager.queryIntentActivities(intent, 0).isEmpty()
 
 private val typedValue = TypedValue()
 
@@ -123,40 +120,7 @@ fun Context.isNavBarOnBottom(): Boolean {
 inline fun Context.dp2px(dipValue: Float) = resources.dp2px(dipValue)
 
 inline fun Resources.dp2px(dipValue: Float) =
-  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, displayMetrics)
-
-@TargetApi(VERSION_CODES.M)
-inline fun <reified T> Context.getSystemService(): T {
-  if (isM()) {
-    return getSystemService<T>()!!
-  } else {
-    return when (T::class) {
-      android.view.WindowManager::class -> Context.WINDOW_SERVICE
-      android.view.LayoutInflater::class -> Context.LAYOUT_INFLATER_SERVICE
-      android.app.ActivityManager::class -> Context.ACTIVITY_SERVICE
-      android.os.PowerManager::class -> Context.POWER_SERVICE
-      android.app.AlarmManager::class -> Context.ALARM_SERVICE
-      android.app.NotificationManager::class -> Context.NOTIFICATION_SERVICE
-      android.app.KeyguardManager::class -> Context.KEYGUARD_SERVICE
-      android.location.LocationManager::class -> Context.LOCATION_SERVICE
-      android.app.SearchManager::class -> Context.SEARCH_SERVICE
-      android.os.Vibrator::class -> Context.VIBRATOR_SERVICE
-      android.net.ConnectivityManager::class -> Context.CONNECTIVITY_SERVICE
-      android.net.wifi.WifiManager::class -> Context.WINDOW_SERVICE
-      android.media.AudioManager::class -> Context.AUDIO_SERVICE
-      android.media.MediaRouter::class -> Context.MEDIA_ROUTER_SERVICE
-      android.telephony.TelephonyManager::class -> Context.TELEPHONY_SERVICE
-      android.telephony.SubscriptionManager::class -> Context.TELEPHONY_SUBSCRIPTION_SERVICE
-      android.view.inputmethod.InputMethodManager::class -> Context.INPUT_METHOD_SERVICE
-      android.app.UiModeManager::class -> Context.UI_MODE_SERVICE
-      android.app.DownloadManager::class -> Context.DOWNLOAD_SERVICE
-      android.os.BatteryManager::class -> Context.BATTERY_SERVICE
-      android.app.job.JobScheduler::class -> Context.JOB_SCHEDULER_SERVICE
-      android.app.usage.NetworkStatsManager::class -> Context.NETWORK_STATS_SERVICE
-      else -> throw UnsupportedOperationException("Unsupported service: ${T::class.java}")
-    }.let { getSystemService(it) as T }
-  }
-}
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, displayMetrics)
 
 fun Context.registerReceiver(intentFilter: IntentFilter): Observable<Intent> {
   return Observable.create { emitter ->
