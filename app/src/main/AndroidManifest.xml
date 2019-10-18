@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="www.cintroy.com.bus">
+    package="io.cintroy.www.bus">
 
   <uses-permission android:name="android.permission.INTERNET" />
 
@@ -10,12 +10,12 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
-    <activity android:name=".ui.activity.MainActivity">
+    <activity android:name="io.cintroy.www.bus.ui.activity.MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <receiver android:name=".receiver.NotificationAlarmReceiver" />
+    <receiver android:name="io.cintroy.www.bus.receiver.NotificationAlarmReceiver" />
   </application>
 </manifest>
