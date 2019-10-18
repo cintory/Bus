@@ -41,6 +41,7 @@
       android:layout_width="12dp"
       android:layout_height="12dp"
       android:src="@drawable/ic_bus"
+      android:visibility="gone"
       app:layout_constraintBottom_toBottomOf="@id/tvCarLicense"
       app:layout_constraintStart_toStartOf="@id/tvStationName"
       app:layout_constraintTop_toTopOf="@id/tvCarLicense"/>
